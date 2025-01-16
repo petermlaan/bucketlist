@@ -1,4 +1,4 @@
-const gBucket = [];
+const gBucket = []; // The activity list
 document.querySelector("#btnSubmit").addEventListener("click", onAdd);
 
 function onAdd(e) {
@@ -23,16 +23,19 @@ function onRemove(e) {
 }
 
 function onDone(e) {
-    console.log(e);
-    console.log(gBucket);
     const activity = e.target.parentElement.value;
     activity.done = !activity.done;
-    console.log(gBucket);
 }
 
 function drawBucket() {
     const hBucket = document.querySelector("#bucketList");
-    hBucket.innerHTML = "";
+
+    // Remove the old list
+    while (hBucket.firstChild) {
+        hBucket.removeChild(hBucket.firstChild);
+    }
+
+    // Add the new list
     let category = "";
     for (const activity of gBucket) {
         if (category !== activity.category) {
@@ -44,21 +47,18 @@ function drawBucket() {
 }
 
 function drawCategory(hBucket, category) {
-    const hCategory = document.createElement("div");
-
-    const hTxt = document.createElement("h2");
-    hTxt.innerText = category;
-    hCategory.appendChild(hTxt);
-
+    const hCategory = document.createElement("h2");
+    hCategory.innerText = category;
     hBucket.appendChild(hCategory);
 }
 
 function drawActivity(hBucket, activity) {
     const hActivity = document.createElement("div");
     hActivity.value = activity;
+    hActivity.classList = "activity";
 
     const hSpan = document.createElement("span");
-    hSpan.innerHTML = activity.name;
+    hSpan.innerText = activity.name;
     hActivity.appendChild(hSpan);
 
     const hDone = document.createElement("input");
