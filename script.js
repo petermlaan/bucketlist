@@ -70,7 +70,6 @@ function drawActivity(hBucket, activity) {
     const hRemove = document.createElement("button");
     hRemove.type = "submit";
     hRemove.innerText = "Ta bort";
-    hRemove.value = "remove";
     hRemove.addEventListener("click", onRemove);
     hActivity.appendChild(hRemove);
 
