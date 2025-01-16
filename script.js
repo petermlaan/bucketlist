@@ -40,19 +40,19 @@ function drawBucket() {
     for (const activity of gBucket) {
         if (category !== activity.category) {
             category = activity.category;
-            drawCategory(hBucket, category);
+            drawCategory(hBucket, category)
         }
         drawActivity(hBucket, activity);
     }
 }
 
-function drawCategory(hBucket, category) {
+function drawCategory(hParent, category) {
     const hCategory = document.createElement("h2");
     hCategory.innerText = category;
-    hBucket.appendChild(hCategory);
+    hParent.appendChild(hCategory);
 }
 
-function drawActivity(hBucket, activity) {
+function drawActivity(hParent, activity) {
     const hActivity = document.createElement("div");
     hActivity.value = activity;
     hActivity.classList = "activity";
@@ -66,12 +66,13 @@ function drawActivity(hBucket, activity) {
     hDone.checked = activity.done;
     hDone.addEventListener("click", onDone);
     hActivity.appendChild(hDone);
-
+    
     const hRemove = document.createElement("button");
     hRemove.type = "submit";
     hRemove.innerText = "Ta bort";
     hRemove.addEventListener("click", onRemove);
     hActivity.appendChild(hRemove);
 
-    hBucket.appendChild(hActivity);
+    hParent.appendChild(hActivity);
 }
+
