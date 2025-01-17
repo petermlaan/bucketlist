@@ -6,12 +6,22 @@ body {
 }
 
 #bucketList {
-    div {
-        display: grid;
-        grid-template-columns: auto auto 5rem;
-    }
-}
+    display: grid;
+    grid-template-columns: 1fr 2rem 5rem;
+    grid-auto-rows: auto;
+    max-width: 30rem;
 
-.activity {
-    margin: 0 0 1rem 2rem;
+    .activity {
+        display: grid;
+        grid-template-columns: subgrid;
+        grid-column: 1 / -1;
+        margin: 0 0 1rem 2rem;
+    }
+
+    .category
+    {
+        display: grid;
+        grid-template-columns: subgrid;
+        grid-column: 1 / -1;
+    }
 }

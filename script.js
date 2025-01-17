@@ -1,7 +1,7 @@
 // Explanation for function prefix naming scheme
-// storage = localStorage
-// model = gBucket
-// view = the html page
+// s = storage = localStorage
+// m = model = gBucket
+// v = view = the html page
 // x2y = move data from layer x to layer y
 // on = html event handler function
 // test = test function
@@ -10,13 +10,10 @@ const LS_BUCKETLIST = "bucketlist"; // Local storage name
 
 let gBucket = [];
 storage2model();
-
-if (gBucket.length === 0)
-    testAddData();
-else
-    model2view();
+model2view();
 
 document.querySelector("#btnSubmit").addEventListener("click", onActivityAdd);
+
 
 function onActivityAdd(e) {
     e.preventDefault();
@@ -72,16 +69,21 @@ function onActivityDone(e) {
 }
 
 function model2view() {
-    function drawCategory(hParent, category) {
+    function m2vCategory(hParent, category) {
+        const hDiv = document.createElement("div");
+        hDiv.classList = "category";
+        hParent.appendChild(hDiv);
+
         const hCategory = document.createElement("h2");
         hCategory.innerText = category;
-        hParent.appendChild(hCategory);
+        hDiv.appendChild(hCategory);
     }
 
-    function drawActivity(hParent, activity) {
+    function m2vActivity(hParent, activity) {
         const hActivity = document.createElement("div");
         hActivity.value = activity;
         hActivity.classList = "activity";
+        hParent.appendChild(hActivity);
 
         const hSpan = document.createElement("span");
         hSpan.innerText = activity.name;
@@ -98,8 +100,6 @@ function model2view() {
         hRemove.innerText = "Ta bort";
         hRemove.addEventListener("click", onActivityRemove);
         hActivity.appendChild(hRemove);
-
-        hParent.appendChild(hActivity);
     }
 
     const hBucket = document.querySelector("#bucketList");
@@ -114,9 +114,9 @@ function model2view() {
     for (const activity of gBucket) {
         if (category !== activity.category) {
             category = activity.category;
-            drawCategory(hBucket, category)
+            m2vCategory(hBucket, category)
         }
-        drawActivity(hBucket, activity);
+        m2vActivity(hBucket, activity);
     }
 }
 
