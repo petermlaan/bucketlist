@@ -20,7 +20,10 @@ function onActivityAdd(e) {
         done: false
     };
     gBucket.push(activity);
-    // Sort the bucket list first by category and then by name. Converts bool to number with the minus sign.
+    // Sort the bucket list first by category and then by name. 
+    // Converts bool to number with the minus sign.
+    // 1 + 2 * -true = -1
+    // 1 + 2 * -false = 1
     gBucket.sort((a, b) =>
         a.category !== b.category ?
             1 + 2 * -(a.category < b.category) :
