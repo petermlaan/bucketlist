@@ -3,15 +3,19 @@ document.querySelector("#btnSubmit").addEventListener("click", onAdd);
 
 function onAdd(e) {
     e.preventDefault();
-    const name = document.querySelector("#activityName").value;
-    const category = document.querySelector("#activityCategory").value;
+    const hName = document.querySelector("#activityName");
+    const name = hName.value;
+    hName.value = "";
+    const hCategory = document.querySelector("#activityCategory");
+    const category = hCategory.value;
+    hCategory.selectedIndex = 0;
     const activity = {
         name: name,
         category: category,
         done: false
-    }
+    };
     gBucket.push(activity);
-    gBucket.sort((a, b) => a.category !== b.category ? a.category > b.category : a.name > b.name);
+    gBucket.sort((a, b) => a.category !== b.category ? a.category > b.category ? 1 : -1 : a.name > b.name ? 1 : -1);
     drawBucket();
 }
 
