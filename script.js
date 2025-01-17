@@ -18,7 +18,7 @@ function onAdd(e) {
     };
     gBucket.push(activity);
     // Sort the bucket list first by category and then by name. Converts bool to number with the minus sign.
-    gBucket.sort((a, b) => a.category !== b.category ? 1+2*-(a.category < b.category) : 1+2*-(a.name < b.name));
+    gBucket.sort((a, b) => a.category !== b.category ? 1 + 2 * -(a.category < b.category) : 1 + 2 * -(a.name < b.name));
     drawBucket();
 }
 
@@ -35,6 +35,36 @@ function onDone(e) {
 }
 
 function drawBucket() {
+    function drawCategory(hParent, category) {
+        const hCategory = document.createElement("h2");
+        hCategory.innerText = category;
+        hParent.appendChild(hCategory);
+    }
+
+    function drawActivity(hParent, activity) {
+        const hActivity = document.createElement("div");
+        hActivity.value = activity;
+        hActivity.classList = "activity";
+
+        const hSpan = document.createElement("span");
+        hSpan.innerText = activity.name;
+        hActivity.appendChild(hSpan);
+
+        const hDone = document.createElement("input");
+        hDone.type = "checkbox";
+        hDone.checked = activity.done;
+        hDone.addEventListener("click", onDone);
+        hActivity.appendChild(hDone);
+
+        const hRemove = document.createElement("button");
+        hRemove.type = "submit";
+        hRemove.innerText = "Ta bort";
+        hRemove.addEventListener("click", onRemove);
+        hActivity.appendChild(hRemove);
+
+        hParent.appendChild(hActivity);
+    }
+
     const hBucket = document.querySelector("#bucketList");
 
     // Remove the old list
@@ -51,36 +81,6 @@ function drawBucket() {
         }
         drawActivity(hBucket, activity);
     }
-}
-
-function drawCategory(hParent, category) {
-    const hCategory = document.createElement("h2");
-    hCategory.innerText = category;
-    hParent.appendChild(hCategory);
-}
-
-function drawActivity(hParent, activity) {
-    const hActivity = document.createElement("div");
-    hActivity.value = activity;
-    hActivity.classList = "activity";
-
-    const hSpan = document.createElement("span");
-    hSpan.innerText = activity.name;
-    hActivity.appendChild(hSpan);
-
-    const hDone = document.createElement("input");
-    hDone.type = "checkbox";
-    hDone.checked = activity.done;
-    hDone.addEventListener("click", onDone);
-    hActivity.appendChild(hDone);
-    
-    const hRemove = document.createElement("button");
-    hRemove.type = "submit";
-    hRemove.innerText = "Ta bort";
-    hRemove.addEventListener("click", onRemove);
-    hActivity.appendChild(hRemove);
-
-    hParent.appendChild(hActivity);
 }
 
 function addTestData() {
