@@ -1,13 +1,26 @@
-const gBucket = []; // The activity list
-document.querySelector("#btnSubmit").addEventListener("click", onActivityAdd);
+// storage = localStorage
+// model = gBucket
+// view = the html page
 
-addTestData();
+const LS_BUCKETLIST = "bucketlist"; // Local storage name
+
+let gBucket = [];
+storage2model();
+
+if (gBucket.length === 0)
+    addTestData();
+else
+    model2view();
+
+    document.querySelector("#btnSubmit").addEventListener("click", onActivityAdd);
 
 function onActivityAdd(e) {
     e.preventDefault();
     const form = document.querySelector("#bucketForm");
     if (!form.reportValidity())
         return;
+
+    // Update model
     const hName = document.querySelector("#activityName");
     const name = hName.value;
     hName.value = "";
@@ -28,22 +41,33 @@ function onActivityAdd(e) {
         a.category !== b.category ?
             1 + 2 * -(a.category < b.category) :
             1 + 2 * -(a.name < b.name));
-    drawBucket();
+
+    model2view();
+
+    model2storage();
 }
 
 function onActivityRemove(e) {
     e.preventDefault();
+
+    // Update model
     const activity = e.target.parentElement.value;
     gBucket.splice(gBucket.indexOf(activity), 1);
-    drawBucket();
+
+    model2view();
+
+    model2storage();
 }
 
 function onActivityDone(e) {
+    // Update model
     const activity = e.target.parentElement.value;
     activity.done = !activity.done;
+
+    model2storage();
 }
 
-function drawBucket() {
+function model2view() {
     function drawCategory(hParent, category) {
         const hCategory = document.createElement("h2");
         hCategory.innerText = category;
@@ -90,6 +114,16 @@ function drawBucket() {
         }
         drawActivity(hBucket, activity);
     }
+}
+
+function storage2model() {
+    const bl = localStorage.getItem(LS_BUCKETLIST);
+    if (bl !== null)
+        gBucket = JSON.parse(bl);
+}
+
+function model2storage() {
+    localStorage.setItem(LS_BUCKETLIST, JSON.stringify(gBucket));
 }
 
 function addTestData() {
