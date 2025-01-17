@@ -68,6 +68,25 @@ function onActivityRemove(e) {
     model2storage();
 }
 
+function onActivityEdit(e) {
+    e.preventDefault();
+    e.target.innerText = "Spara"
+    e.target.addEventListener("click", onActivitySave);
+    e.target.parentElement.firstChild.firstChild.style.display = "inline";
+}
+
+function onActivitySave(e) {
+    e.preventDefault();
+
+    // View to model
+    const hName = e.target.parentElement.firstChild.firstChild;
+    const activity = e.target.parentElement.value;
+    activity.name = hName.value;
+
+    model2view();
+    model2storage();
+}
+
 function onActivityDone(e) {
     // Update model
     const activity = e.target.parentElement.value;
@@ -88,26 +107,44 @@ function model2view() {
     }
 
     function m2vActivity(hParent, activity) {
+        // Main div
         const hActivity = document.createElement("div");
         hActivity.value = activity;
         hActivity.classList = "activity";
         hParent.appendChild(hActivity);
 
+        // Name
+        const hNameDiv = document.createElement("div");
+        hActivity.appendChild(hNameDiv);
+        const hName = document.createElement("input");
+        hName.value = activity.name;
+        hName.style.display = "none";
+        hName.className = "name-edit";
+        hNameDiv.appendChild(hName);
         const hSpan = document.createElement("span");
         hSpan.innerText = activity.name;
-        hActivity.appendChild(hSpan);
-
+        hNameDiv.appendChild(hSpan);
+        
+        // Done
         const hDone = document.createElement("input");
         hDone.type = "checkbox";
         hDone.checked = activity.done;
         hDone.addEventListener("click", onActivityDone);
         hActivity.appendChild(hDone);
 
+        // Remove
         const hRemove = document.createElement("button");
         hRemove.type = "submit";
         hRemove.innerText = "Ta bort";
         hRemove.addEventListener("click", onActivityRemove);
         hActivity.appendChild(hRemove);
+
+        // Edit
+        const hEdit = document.createElement("button");
+        hEdit.type = "submit";
+        hEdit.innerText = "Ändra";
+        hEdit.addEventListener("click", onActivityEdit);
+        hActivity.appendChild(hEdit);
     }
 
     const hBucket = document.querySelector("#bucketList");
