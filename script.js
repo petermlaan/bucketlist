@@ -1,6 +1,10 @@
+// Explanation for function prefix naming scheme
 // storage = localStorage
 // model = gBucket
 // view = the html page
+// x2y = move data from layer x to layer y
+// on = html event handler function
+// test = test function
 
 const LS_BUCKETLIST = "bucketlist"; // Local storage name
 
@@ -8,11 +12,11 @@ let gBucket = [];
 storage2model();
 
 if (gBucket.length === 0)
-    addTestData();
+    testAddData();
 else
     model2view();
 
-    document.querySelector("#btnSubmit").addEventListener("click", onActivityAdd);
+document.querySelector("#btnSubmit").addEventListener("click", onActivityAdd);
 
 function onActivityAdd(e) {
     e.preventDefault();
@@ -126,7 +130,7 @@ function model2storage() {
     localStorage.setItem(LS_BUCKETLIST, JSON.stringify(gBucket));
 }
 
-function addTestData() {
+function testAddData() {
     function addActivity(hName, hCategory, hAdd, name, categoryIndex) {
         hName.value = name;
         hCategory.selectedIndex = categoryIndex;
