@@ -1,6 +1,8 @@
 const gBucket = []; // The activity list
 document.querySelector("#btnSubmit").addEventListener("click", onAdd);
 
+addTestData();
+
 function onAdd(e) {
     e.preventDefault();
     const hName = document.querySelector("#activityName");
@@ -15,7 +17,8 @@ function onAdd(e) {
         done: false
     };
     gBucket.push(activity);
-    gBucket.sort((a, b) => a.category !== b.category ? a.category > b.category ? 1 : -1 : a.name > b.name ? 1 : -1);
+    // Sort the bucket list first by category and then by name. Converts bool to number with the minus sign.
+    gBucket.sort((a, b) => a.category !== b.category ? 1+2*-(a.category < b.category) : 1+2*-(a.name < b.name));
     drawBucket();
 }
 
@@ -80,3 +83,21 @@ function drawActivity(hParent, activity) {
     hParent.appendChild(hActivity);
 }
 
+function addTestData() {
+    function addActivity(hName, hCategory, hAdd, name, categoryIndex) {
+        hName.value = name;
+        hCategory.selectedIndex = categoryIndex;
+        hAdd.click();
+    }
+    const hName = document.querySelector("#activityName");
+    const hCategory = document.querySelector("#activityCategory");
+    const hAdd = document.querySelector("#btnSubmit");
+    addActivity(hName, hCategory, hAdd, "Resa till månen", 0);
+    addActivity(hName, hCategory, hAdd, "Resa till Skövde", 0);
+    addActivity(hName, hCategory, hAdd, "Spela DnD", 1);
+    addActivity(hName, hCategory, hAdd, "Spela Shadowrun", 1);
+    addActivity(hName, hCategory, hAdd, "Penningpolitik", 2);
+    addActivity(hName, hCategory, hAdd, "Kvantfysik", 2);
+    addActivity(hName, hCategory, hAdd, "Oljemålning", 3);
+    addActivity(hName, hCategory, hAdd, "Samla frimärken", 3);
+}
