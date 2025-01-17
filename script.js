@@ -1,10 +1,13 @@
 const gBucket = []; // The activity list
-document.querySelector("#btnSubmit").addEventListener("click", onAdd);
+document.querySelector("#btnSubmit").addEventListener("click", onActivityAdd);
 
 addTestData();
 
-function onAdd(e) {
+function onActivityAdd(e) {
     e.preventDefault();
+    const form = document.querySelector("#bucketForm");
+    if (!form.reportValidity())
+        return;
     const hName = document.querySelector("#activityName");
     const name = hName.value;
     hName.value = "";
@@ -18,18 +21,21 @@ function onAdd(e) {
     };
     gBucket.push(activity);
     // Sort the bucket list first by category and then by name. Converts bool to number with the minus sign.
-    gBucket.sort((a, b) => a.category !== b.category ? 1 + 2 * -(a.category < b.category) : 1 + 2 * -(a.name < b.name));
+    gBucket.sort((a, b) =>
+        a.category !== b.category ?
+            1 + 2 * -(a.category < b.category) :
+            1 + 2 * -(a.name < b.name));
     drawBucket();
 }
 
-function onRemove(e) {
+function onActivityRemove(e) {
     e.preventDefault();
     const activity = e.target.parentElement.value;
     gBucket.splice(gBucket.indexOf(activity), 1);
     drawBucket();
 }
 
-function onDone(e) {
+function onActivityDone(e) {
     const activity = e.target.parentElement.value;
     activity.done = !activity.done;
 }
@@ -53,13 +59,13 @@ function drawBucket() {
         const hDone = document.createElement("input");
         hDone.type = "checkbox";
         hDone.checked = activity.done;
-        hDone.addEventListener("click", onDone);
+        hDone.addEventListener("click", onActivityDone);
         hActivity.appendChild(hDone);
 
         const hRemove = document.createElement("button");
         hRemove.type = "submit";
         hRemove.innerText = "Ta bort";
-        hRemove.addEventListener("click", onRemove);
+        hRemove.addEventListener("click", onActivityRemove);
         hActivity.appendChild(hRemove);
 
         hParent.appendChild(hActivity);
