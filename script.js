@@ -9,11 +9,19 @@
 const LS_BUCKETLIST = "bucketlist"; // Local storage name
 
 let gBucket = [];
+let gFilter = false;
+
 storage2model();
 model2view();
 
 document.querySelector("#btnSubmit").addEventListener("click", onActivityAdd);
+document.querySelector("#chkFilter").addEventListener("click", onFilter);
 
+
+function onFilter(e) {
+    gFilter = e.target.checked;
+    model2view();
+}
 
 function onActivityAdd(e) {
     e.preventDefault();
@@ -112,11 +120,13 @@ function model2view() {
     // Add the new list
     let category = "";
     for (const activity of gBucket) {
-        if (category !== activity.category) {
-            category = activity.category;
-            m2vCategory(hBucket, category)
+        if (!gFilter || !activity.done) {
+            if (category !== activity.category) {
+                category = activity.category;
+                m2vCategory(hBucket, category)
+            }
+            m2vActivity(hBucket, activity);
         }
-        m2vActivity(hBucket, activity);
     }
 }
 

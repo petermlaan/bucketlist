@@ -9,7 +9,7 @@ body {
     display: grid;
     grid-template-columns: 1fr 2rem 5rem;
     grid-auto-rows: auto;
-    max-width: 30rem;
+    max-width: 35rem;
 
     .activity {
         display: grid;
@@ -23,5 +23,11 @@ body {
         display: grid;
         grid-template-columns: subgrid;
         grid-column: 1 / -1;
+        background-color: #135;
+        margin: 1rem 0;
+
+        h2 {
+            margin: 0;
+        }
     }
 }
