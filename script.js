@@ -1,28 +1,30 @@
 // Explanation for prefix naming scheme
 // s = storage = localStorage
-// m = model = m variables (global)
 // g = global varable
 // v = view = the html page
 // x2y = move data from layer x to layer y
 // on = html event handler
 // h = html element
 
-const LS_BUCKETLIST = "bucketlist"; // Local storage name
+// gModel contains all model variables to make localStorage easier.
+const LS_MODEL = "model";   // Local storage key
+let gModel = {
+    bucket: [],     // List of all activities
+    filter: false   // Filter out all accomplished activities
+};       
 
-let mBucket = [];       // List of all activities
-
-let gFilter = false;    // Filter out accomplished activities
-
-s2mBucket();
-m2vBucket();
+storage2model();
+model2view();
 
 document.querySelector("#btnSubmit").addEventListener("click", onActivityAdd);
 document.querySelector("#chkFilter").addEventListener("click", onFilter);
 
 
 function onFilter(e) {
-    gFilter = e.target.checked;
-    m2vBucket();
+    // View to model
+    gModel.filter = e.target.checked;
+    model2view();
+    model2storage();
 }
 
 function onActivityAdd(e) {
@@ -43,19 +45,19 @@ function onActivityAdd(e) {
         category: category,
         done: false
     };
-    mBucket.push(activity);
+    gModel.bucket.push(activity);
     // Sort the bucket list first by category and then by name. 
-    // Converts bool to number with the minus sign.
+    // Convert bool to number with the minus sign.
     // 1 + 2 * -true = -1
     // 1 + 2 * -false = 1
-    mBucket.sort((a, b) =>
+    gModel.bucket.sort((a, b) =>
         a.category !== b.category ?
             1 + 2 * -(a.category < b.category) :
             1 + 2 * -(a.name < b.name));
     // #endregion
 
-    m2vBucket();
-    m2sBucket();
+    model2view();
+    model2storage();
 }
 
 function onActivityRemove(e) {
@@ -63,11 +65,11 @@ function onActivityRemove(e) {
 
     // #region Update model
     const activity = e.target.parentElement.value;
-    mBucket.splice(mBucket.indexOf(activity), 1);
+    gModel.bucket.splice(gModel.bucket.indexOf(activity), 1);
     // #endregion
 
-    m2vBucket();
-    m2sBucket();
+    model2view();
+    model2storage();
 }
 
 function onActivityEdit(e) {
@@ -86,8 +88,8 @@ function onActivitySave(e) {
     activity.name = hName.value;
     // #endregion
 
-    m2vBucket();
-    m2sBucket();
+    model2view();
+    model2storage();
 }
 
 function onActivityDone(e) {
@@ -96,16 +98,16 @@ function onActivityDone(e) {
     activity.done = !activity.done;
     // #endregion
 
-    m2sBucket();
+    model2storage();
 }
 
-function s2mBucket() {
-    const bl = localStorage.getItem(LS_BUCKETLIST);
-    if (bl !== null)
-        mBucket = JSON.parse(bl);
+function storage2model() {
+    const m = localStorage.getItem(LS_MODEL);
+    if (m !== null)
+        gModel = JSON.parse(m);
 }
 
-function m2vBucket() {
+function model2view() {
     const hBucket = document.querySelector("#bucketList");
 
     // Remove the old list
@@ -113,10 +115,10 @@ function m2vBucket() {
         hBucket.removeChild(hBucket.firstChild);
     }
 
-    // Add the new list
+    // #region Add the new list
     let category = "";
-    for (const activity of mBucket) {
-        if (!gFilter || !activity.done) {
+    for (const activity of gModel.bucket) {
+        if (!gModel.filter || !activity.done) {
             if (category !== activity.category) {
                 category = activity.category;
                 // #region Add category
@@ -176,8 +178,12 @@ function m2vBucket() {
             // #endregion
         }
     }
+    // #endregion
+
+    const hFilter = document.querySelector("#chkFilter");
+    hFilter.checked = gModel.filter;
 }
 
-function m2sBucket() {
-    localStorage.setItem(LS_BUCKETLIST, JSON.stringify(mBucket));
+function model2storage() {
+    localStorage.setItem(LS_MODEL, JSON.stringify(gModel));
 }
