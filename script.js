@@ -1,18 +1,20 @@
-// Explanation for function prefix naming scheme
+// Explanation for prefix naming scheme
 // s = storage = localStorage
-// m = model = gBucket
+// m = model = m variables (global)
+// g = global varable
 // v = view = the html page
 // x2y = move data from layer x to layer y
-// on = html event handler function
-// test = test function
+// on = html event handler
+// h = html element
 
 const LS_BUCKETLIST = "bucketlist"; // Local storage name
 
-let gBucket = [];
-let gFilter = false;
+let mBucket = [];       // List of all activities
 
-storage2model();
-model2view();
+let gFilter = false;    // Filter out accomplished activities
+
+s2mBucket();
+m2vBucket();
 
 document.querySelector("#btnSubmit").addEventListener("click", onActivityAdd);
 document.querySelector("#chkFilter").addEventListener("click", onFilter);
@@ -20,7 +22,7 @@ document.querySelector("#chkFilter").addEventListener("click", onFilter);
 
 function onFilter(e) {
     gFilter = e.target.checked;
-    model2view();
+    m2vBucket();
 }
 
 function onActivityAdd(e) {
@@ -29,7 +31,7 @@ function onActivityAdd(e) {
     if (!form.reportValidity())
         return;
 
-    // Update model
+    // #region Update model
     const hName = document.querySelector("#activityName");
     const name = hName.value;
     hName.value = "";
@@ -41,31 +43,31 @@ function onActivityAdd(e) {
         category: category,
         done: false
     };
-    gBucket.push(activity);
+    mBucket.push(activity);
     // Sort the bucket list first by category and then by name. 
     // Converts bool to number with the minus sign.
     // 1 + 2 * -true = -1
     // 1 + 2 * -false = 1
-    gBucket.sort((a, b) =>
+    mBucket.sort((a, b) =>
         a.category !== b.category ?
             1 + 2 * -(a.category < b.category) :
             1 + 2 * -(a.name < b.name));
+    // #endregion
 
-    model2view();
-
-    model2storage();
+    m2vBucket();
+    m2sBucket();
 }
 
 function onActivityRemove(e) {
     e.preventDefault();
 
-    // Update model
+    // #region Update model
     const activity = e.target.parentElement.value;
-    gBucket.splice(gBucket.indexOf(activity), 1);
+    mBucket.splice(mBucket.indexOf(activity), 1);
+    // #endregion
 
-    model2view();
-
-    model2storage();
+    m2vBucket();
+    m2sBucket();
 }
 
 function onActivityEdit(e) {
@@ -78,75 +80,32 @@ function onActivityEdit(e) {
 function onActivitySave(e) {
     e.preventDefault();
 
-    // View to model
+    // #region View to model
     const hName = e.target.parentElement.firstChild.firstChild;
     const activity = e.target.parentElement.value;
     activity.name = hName.value;
+    // #endregion
 
-    model2view();
-    model2storage();
+    m2vBucket();
+    m2sBucket();
 }
 
 function onActivityDone(e) {
-    // Update model
+    // #region Update model
     const activity = e.target.parentElement.value;
     activity.done = !activity.done;
+    // #endregion
 
-    model2storage();
+    m2sBucket();
 }
 
-function model2view() {
-    function m2vCategory(hParent, category) {
-        const hDiv = document.createElement("div");
-        hDiv.classList = "category";
-        hParent.appendChild(hDiv);
+function s2mBucket() {
+    const bl = localStorage.getItem(LS_BUCKETLIST);
+    if (bl !== null)
+        mBucket = JSON.parse(bl);
+}
 
-        const hCategory = document.createElement("h2");
-        hCategory.innerText = category;
-        hDiv.appendChild(hCategory);
-    }
-
-    function m2vActivity(hParent, activity) {
-        // Main div
-        const hActivity = document.createElement("div");
-        hActivity.value = activity;
-        hActivity.classList = "activity";
-        hParent.appendChild(hActivity);
-
-        // Name
-        const hNameDiv = document.createElement("div");
-        hActivity.appendChild(hNameDiv);
-        const hName = document.createElement("input");
-        hName.value = activity.name;
-        hName.style.display = "none";
-        hName.className = "name-edit";
-        hNameDiv.appendChild(hName);
-        const hSpan = document.createElement("span");
-        hSpan.innerText = activity.name;
-        hNameDiv.appendChild(hSpan);
-        
-        // Done
-        const hDone = document.createElement("input");
-        hDone.type = "checkbox";
-        hDone.checked = activity.done;
-        hDone.addEventListener("click", onActivityDone);
-        hActivity.appendChild(hDone);
-
-        // Remove
-        const hRemove = document.createElement("button");
-        hRemove.type = "submit";
-        hRemove.innerText = "Ta bort";
-        hRemove.addEventListener("click", onActivityRemove);
-        hActivity.appendChild(hRemove);
-
-        // Edit
-        const hEdit = document.createElement("button");
-        hEdit.type = "submit";
-        hEdit.innerText = "Ändra";
-        hEdit.addEventListener("click", onActivityEdit);
-        hActivity.appendChild(hEdit);
-    }
-
+function m2vBucket() {
     const hBucket = document.querySelector("#bucketList");
 
     // Remove the old list
@@ -156,42 +115,69 @@ function model2view() {
 
     // Add the new list
     let category = "";
-    for (const activity of gBucket) {
+    for (const activity of mBucket) {
         if (!gFilter || !activity.done) {
             if (category !== activity.category) {
                 category = activity.category;
-                m2vCategory(hBucket, category)
+                // #region Add category
+                const hDiv = document.createElement("div");
+                hDiv.classList = "category";
+                hBucket.appendChild(hDiv);
+
+                const hCategory = document.createElement("h2");
+                hCategory.innerText = category;
+                hDiv.appendChild(hCategory);
+                // #endregion
             }
-            m2vActivity(hBucket, activity);
+            // #region Add activity
+            // #region Main div
+            const hActivity = document.createElement("div");
+            hActivity.value = activity;
+            hActivity.classList = "activity";
+            hBucket.appendChild(hActivity);
+            // #endregion
+
+            // #region Name
+            const hNameDiv = document.createElement("div");
+            hActivity.appendChild(hNameDiv);
+            const hName = document.createElement("input");
+            hName.value = activity.name;
+            hName.style.display = "none";
+            hName.className = "name-edit";
+            hNameDiv.appendChild(hName);
+            const hSpan = document.createElement("span");
+            hSpan.innerText = activity.name;
+            hNameDiv.appendChild(hSpan);
+            // #endregion
+
+            // #region Done
+            const hDone = document.createElement("input");
+            hDone.type = "checkbox";
+            hDone.checked = activity.done;
+            hDone.addEventListener("click", onActivityDone);
+            hActivity.appendChild(hDone);
+            // #endregion
+
+            // #region Edit
+            const hEdit = document.createElement("button");
+            hEdit.type = "submit";
+            hEdit.innerText = "Ändra";
+            hEdit.addEventListener("click", onActivityEdit);
+            hActivity.appendChild(hEdit);
+            // #endregion
+
+            // #region Remove
+            const hRemove = document.createElement("button");
+            hRemove.type = "submit";
+            hRemove.innerText = "Ta bort";
+            hRemove.addEventListener("click", onActivityRemove);
+            hActivity.appendChild(hRemove);
+            // #endregion
+            // #endregion
         }
     }
 }
 
-function storage2model() {
-    const bl = localStorage.getItem(LS_BUCKETLIST);
-    if (bl !== null)
-        gBucket = JSON.parse(bl);
-}
-
-function model2storage() {
-    localStorage.setItem(LS_BUCKETLIST, JSON.stringify(gBucket));
-}
-
-function testAddData() {
-    function addActivity(hName, hCategory, hAdd, name, categoryIndex) {
-        hName.value = name;
-        hCategory.selectedIndex = categoryIndex;
-        hAdd.click();
-    }
-    const hName = document.querySelector("#activityName");
-    const hCategory = document.querySelector("#activityCategory");
-    const hAdd = document.querySelector("#btnSubmit");
-    addActivity(hName, hCategory, hAdd, "Resa till månen", 0);
-    addActivity(hName, hCategory, hAdd, "Resa till Skövde", 0);
-    addActivity(hName, hCategory, hAdd, "Spela DnD", 1);
-    addActivity(hName, hCategory, hAdd, "Spela Shadowrun", 1);
-    addActivity(hName, hCategory, hAdd, "Penningpolitik", 2);
-    addActivity(hName, hCategory, hAdd, "Kvantfysik", 2);
-    addActivity(hName, hCategory, hAdd, "Oljemålning", 3);
-    addActivity(hName, hCategory, hAdd, "Samla frimärken", 3);
+function m2sBucket() {
+    localStorage.setItem(LS_BUCKETLIST, JSON.stringify(mBucket));
 }
